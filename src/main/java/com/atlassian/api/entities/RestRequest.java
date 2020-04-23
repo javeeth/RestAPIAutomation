@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class RestRequest {
     private String requestBody;
-    private Map<String,Object> headerMap;
+    private Map<String,String> headerMap;
     private String endpoint;
     private String requestUri;
 
@@ -16,11 +16,11 @@ public class RestRequest {
         this.requestBody = requestBody;
     }
 
-    public Map<String, Object> getHeaderMap() {
+    public Map<String, String> getHeaderMap() {
         return headerMap;
     }
 
-    public void setHeaderMap(Map<String, Object> headerMap) {
+    public void setHeaderMap(Map<String, String> headerMap) {
         this.headerMap = headerMap;
     }
 

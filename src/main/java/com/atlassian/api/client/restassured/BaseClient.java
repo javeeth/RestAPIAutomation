@@ -25,7 +25,7 @@ public class BaseClient {
 
     }
 
-    public Response getRequest(RestRequest restRequest){
+    public Response getResponse(RestRequest restRequest){
 
         RestAssured.baseURI = restRequest.getEndpoint();
         RestAssured.basePath = restRequest.getRequestUri();
