@@ -59,18 +59,15 @@ public class RestAssuredClient {
         restRequest.setRequestBody(requestBody);
         restRequest.setRequestUri(requestUri);
         restRequest.setHeaderMap(header);
-
         return restRequest;
     }
 
     private <T> RestResponse<T> mapResponse(Class<T> responseClass, Response response) {
-
         RestResponse<T> apiResponse = new RestResponse<>();
         T data = gson.fromJson(response.asString(), responseClass);
         apiResponse.setApiResponse(data);
         apiResponse.setStatusCode(response.statusCode());
         return apiResponse;
     }
-
 
 }

@@ -1,6 +1,7 @@
 package com.atlassian.apitesting.tests;
 
 import com.atlassian.api.entities.*;
+import com.atlassian.api.exceptions.InvalidEnvironmentException;
 import com.atlassian.api.property.Environment;
 import com.atlassian.api.property.SystemProperties;
 import com.atlassian.apitesting.Group;
@@ -27,8 +28,14 @@ public class EmployeeTests {
 
     @BeforeMethod
     void initializeApiContext(){
-        ConfigFactory.setProperty("env", SystemProperties.ENV);
-        testEnvironment = ConfigFactory.create(Environment.class);
+        try{
+            ConfigFactory.setProperty("env", SystemProperties.ENV);
+            testEnvironment = ConfigFactory.create(Environment.class);
+        }
+        catch (Exception e){
+            throw new InvalidEnvironmentException(SystemProperties.ENV);
+        }
+
         logger.info("Test Environment is : " + SystemProperties.ENV);
         employeeTestHelper = new EmployeeTestHelper(testEnvironment);
         assertionHelper = new AssertionHelper();
