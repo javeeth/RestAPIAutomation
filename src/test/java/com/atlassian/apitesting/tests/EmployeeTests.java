@@ -4,6 +4,7 @@ import com.atlassian.api.entities.*;
 import com.atlassian.api.property.Environment;
 import com.atlassian.api.property.SystemProperties;
 import com.atlassian.apitesting.Group;
+import com.atlassian.apitesting.apiHelper.AssertionHelper;
 import com.atlassian.apitesting.apiHelper.EmployeeTestHelper;
 import com.atlassian.apitesting.dataProviders.EmployeeProvider;
 import com.google.gson.Gson;
@@ -20,8 +21,9 @@ public class EmployeeTests {
 
     Environment testEnvironment;
     EmployeeTestHelper employeeTestHelper;
+    Gson gson;
+    AssertionHelper assertionHelper;
     Logger logger = Logger.getLogger(EmployeeTests.class.getName());
-    Gson gson = new Gson();
 
     @BeforeMethod
     void initializeApiContext(){
@@ -29,44 +31,47 @@ public class EmployeeTests {
         testEnvironment = ConfigFactory.create(Environment.class);
         logger.info("Test Environment is : " + SystemProperties.ENV);
         employeeTestHelper = new EmployeeTestHelper(testEnvironment);
+        assertionHelper = new AssertionHelper();
+        gson = new Gson();
     }
 
     @Test(groups = {Group.REGRESSION, Group.SMOKE})
-    public void getEmployeeDetails(){
+    public void happyPathGetEmployeeList(){
         RestResponse<GetEmployeesRsp> getEmployeesRsp = employeeTestHelper.getEmployees();
         logger.info("GetEmployee Response  : \n" + gson.toJson(getEmployeesRsp.getApiResponse()));
         Assert.assertEquals(HttpStatus.SC_OK, getEmployeesRsp.getStatusCode());
     }
 
     @Test(groups = {Group.REGRESSION, Group.SMOKE}, dataProvider = "employee", dataProviderClass = EmployeeProvider.class)
-    public void postEmployeeDetails(Employee employee){
+    public void happyPathPostEmployeeAndVerifyEmployeeDetails(Employee employee){
 
         RestResponse<PostEmployeeRsp> postEmployeeRsp = employeeTestHelper.postEmployee(employee);
+        Assert.assertEquals(HttpStatus.SC_OK, postEmployeeRsp.getStatusCode());
         logger.info("GetEmployee Response  : \n" + gson.toJson(postEmployeeRsp.getApiResponse()));
 
-        Assert.assertEquals(postEmployeeRsp.getApiResponse().getData().getName(), employee.getName());
-        Assert.assertEquals(postEmployeeRsp.getApiResponse().getData().getAge(), employee.getAge());
-        Assert.assertEquals(postEmployeeRsp.getApiResponse().getData().getSalary(), employee.getSalary());
+        assertionHelper.assertEmployeeData(postEmployeeRsp.getApiResponse(), employee);
 
         RestResponse<GetEmployeesRsp> getEmployeesRsp = employeeTestHelper.getEmployees();
+        Assert.assertEquals(HttpStatus.SC_OK, getEmployeesRsp.getStatusCode());
         logger.info("GetEmployee Response  : \n" + gson.toJson(getEmployeesRsp.getApiResponse()));
 
         Optional<EmployeeData> employeeData =  getEmployeesRsp.getApiResponse().getData().stream().filter(i -> i.getId().equals("1")).findAny();
 
-        Assert.assertEquals("1", employeeData.get().getId());
-        Assert.assertEquals(employeeData.get().getEmployee_name(), postEmployeeRsp.getApiResponse().getData().getName());
-        Assert.assertEquals(employeeData.get().getEmployee_age(), postEmployeeRsp.getApiResponse().getData().getAge());
-        Assert.assertEquals(employeeData.get().getEmployee_salary(), postEmployeeRsp.getApiResponse().getData().getSalary());
+        assertionHelper.assertEmployeeData(employeeData.get(), postEmployeeRsp.getApiResponse());
     }
 
     @Test(groups = {Group.REGRESSION, Group.SMOKE}, dataProvider = "employee", dataProviderClass = EmployeeProvider.class)
-    public void updateEmployeeDetails(Employee employee) {
+    public void happyPathCreateEmployeeAndUpdateEmployeeDetails(Employee employee) {
 
         RestResponse<PostEmployeeRsp> postEmployeeRsp = employeeTestHelper.postEmployee(employee);
+        Assert.assertEquals(HttpStatus.SC_OK, postEmployeeRsp.getStatusCode());
         logger.info("Post Employee Response  : \n" + gson.toJson(postEmployeeRsp.getApiResponse()));
+
+        assertionHelper.assertEmployeeData(postEmployeeRsp.getApiResponse(), employee);
 
         employee.setName("FindMe");
         RestResponse<EmployeeInfo> updateEmployee = employeeTestHelper.updateEmployee(1, employee);
+        Assert.assertEquals(HttpStatus.SC_OK, updateEmployee.getStatusCode());
         logger.info("Put Employee Response  : \n" + gson.toJson(updateEmployee.getApiResponse()));
 
         Assert.assertEquals(updateEmployee.getApiResponse().getStatus(), "success");
