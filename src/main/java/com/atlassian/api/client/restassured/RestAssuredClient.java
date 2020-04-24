@@ -1,17 +1,12 @@
 package com.atlassian.api.client.restassured;
 
-import com.atlassian.api.entities.GetEmployeesRsp;
-import com.atlassian.api.entities.RestRequest;
-import com.atlassian.api.entities.RestResponse;
+import com.atlassian.api.entities.*;
 import com.atlassian.api.property.Environment;
 import com.google.gson.Gson;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.apache.http.HttpStatus;
 
 import java.util.Map;
-
-import static io.restassured.RestAssured.given;
 
 public class RestAssuredClient {
 
@@ -24,35 +19,70 @@ public class RestAssuredClient {
     }
 
 
-    public RestResponse<GetEmployeesRsp> postEmployeeList(String requestBody){
+    public RestResponse<PostEmployeeRsp> postEmployee(String requestBody){
+        RestRequest restRequest = getRestRequest(endpoint, "/api/v1/create", requestBody);
+        Response response = baseClient.postRequest(restRequest);
+        RestResponse<PostEmployeeRsp> apiResponse = mapEmployeeDetails(response);
+        return apiResponse;
+    }
 
-        RestRequest restRequest = getRestRequest(endpoint, "/api/v1/employees", requestBody);
+    public RestResponse<EmployeeInfo> updateEmployee(Integer employeeId, String requestBody){
+        RestRequest restRequest = getRestRequest(endpoint, String.format("/api/v1/update/%s", employeeId), requestBody);
+        Response response = baseClient.putRequest(restRequest);
+        RestResponse<EmployeeInfo> apiResponse = mapEmployeeInfo(response);
+        return apiResponse;
+    }
+
+    public RestResponse<GetEmployeesRsp> getEmployeeList(){
+        RestRequest restRequest = getRestRequest(endpoint, "/api/v1/employees");
         Response response = baseClient.getResponse(restRequest);
-        GetEmployeesRsp empObject = gson.fromJson(response.toString(), GetEmployeesRsp.class);
+        RestResponse<GetEmployeesRsp> apiResponse = mapGetEmployeesResponse(response);
+        return apiResponse;
+    }
 
+    public RestResponse<EmployeeInfo> getEmployee(Integer employeeId){
+        RestRequest restRequest = getRestRequest(endpoint, String.format("/api/v1/employee/%s", employeeId));
+        Response response = baseClient.getResponse(restRequest);
+        String sfs = response.asString();
+        RestResponse<EmployeeInfo> apiResponse = mapEmployeeInfo(response);
+        return apiResponse;
+    }
+
+    private RestResponse<GetEmployeesRsp> mapGetEmployeesResponse(Response response) {
+        GetEmployeesRsp employeesRsp = gson.fromJson(response.asString(), GetEmployeesRsp.class);
         RestResponse<GetEmployeesRsp> apiResponse = new RestResponse<>();
-        apiResponse.setApiResponse(empObject);
+        apiResponse.setApiResponse(employeesRsp);
         apiResponse.setStatusCode(response.statusCode());
 
         return apiResponse;
     }
 
-    public RestResponse<GetEmployeesRsp> getEmployeeList(){
-        RestAssured.baseURI = endpoint;
-        RestAssured.basePath = "/api/v1/employees";
-        Response response =  given().contentType(ContentType.JSON)
-                .get()
-                .then()
-                .extract()
-                .response();
-
-        GetEmployeesRsp empObject = gson.fromJson(response.asString(), GetEmployeesRsp.class);
-
-        RestResponse<GetEmployeesRsp> apiResponse = new RestResponse<>();
-        apiResponse.setApiResponse(empObject);
+    private RestResponse<EmployeeInfo> mapEmployeeInfo(Response response) {
+        EmployeeInfo employeeRsp = gson.fromJson(response.asString(), EmployeeInfo.class);
+        RestResponse<EmployeeInfo> apiResponse = new RestResponse<>();
+        apiResponse.setApiResponse(employeeRsp);
         apiResponse.setStatusCode(response.statusCode());
 
         return apiResponse;
+    }
+
+    private RestResponse<PostEmployeeRsp> mapEmployeeDetails(Response response) {
+        PostEmployeeRsp employeesRsp = gson.fromJson(response.asString(), PostEmployeeRsp.class);
+        RestResponse<PostEmployeeRsp> apiResponse = new RestResponse<>();
+        apiResponse.setApiResponse(employeesRsp);
+        apiResponse.setStatusCode(response.statusCode());
+
+        return apiResponse;
+    }
+
+
+
+    private RestRequest getRestRequest(String endpoint, String requestUri){
+        return getRestRequest(endpoint, requestUri, null, null);
+    }
+
+    private RestRequest getRestRequest(String endpoint, String requestUri, String requestBody){
+        return getRestRequest(endpoint, requestUri, requestBody, null);
     }
 
     private RestRequest getRestRequest(String endpoint, String requestUri, String requestBody, Map<String, String> header){
@@ -63,9 +93,5 @@ public class RestAssuredClient {
         restRequest.setHeaderMap(header);
 
         return restRequest;
-    }
-
-    private RestRequest getRestRequest(String endpoint, String requestUri, String requestBody){
-        return getRestRequest(endpoint, requestUri, requestBody, null);
     }
 }
