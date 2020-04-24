@@ -1,4 +1,4 @@
-package com.atlassian.api.propertyHandler;
+package com.atlassian.api.property;
 
 import org.aeonbits.owner.Config;
 

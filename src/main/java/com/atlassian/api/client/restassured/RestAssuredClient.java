@@ -3,6 +3,7 @@ package com.atlassian.api.client.restassured;
 import com.atlassian.api.entities.GetEmployeesRsp;
 import com.atlassian.api.entities.RestRequest;
 import com.atlassian.api.entities.RestResponse;
+import com.atlassian.api.property.Environment;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,10 +15,16 @@ import static io.restassured.RestAssured.given;
 
 public class RestAssuredClient {
 
+    public String endpoint;
     BaseClient baseClient = new BaseClient();
     Gson gson = new Gson();
 
-    public RestResponse<GetEmployeesRsp> postEmployeeList(String endpoint, String requestBody){
+    public RestAssuredClient(Environment env){
+        this.endpoint = env.endpoint();
+    }
+
+
+    public RestResponse<GetEmployeesRsp> postEmployeeList(String requestBody){
 
         RestRequest restRequest = getRestRequest(endpoint, "/api/v1/employees", requestBody);
         Response response = baseClient.getResponse(restRequest);
@@ -30,7 +37,7 @@ public class RestAssuredClient {
         return apiResponse;
     }
 
-    public RestResponse<GetEmployeesRsp> getEmployeeList(String endpoint){
+    public RestResponse<GetEmployeesRsp> getEmployeeList(){
         RestAssured.baseURI = endpoint;
         RestAssured.basePath = "/api/v1/employees";
         Response response =  given().contentType(ContentType.JSON)

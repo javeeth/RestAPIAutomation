@@ -22,7 +22,6 @@ public class BaseClient {
                 .response();
 
         return response;
-
     }
 
     public Response getResponse(RestRequest restRequest){
@@ -37,6 +36,34 @@ public class BaseClient {
                 .response();
 
         return response;
+    }
 
+    public Response putRequest(RestRequest restRequest){
+
+        RestAssured.baseURI = restRequest.getEndpoint();
+        RestAssured.basePath = restRequest.getRequestUri();
+
+        Response response =  given().contentType(ContentType.JSON)
+                .body(restRequest.getRequestBody())
+                .put()
+                .then()
+                .extract()
+                .response();
+
+        return response;
+    }
+
+    public Response deleteRequest(RestRequest restRequest){
+
+        RestAssured.baseURI = restRequest.getEndpoint();
+        RestAssured.basePath = restRequest.getRequestUri();
+
+        Response response =  given()
+                .delete()
+                .then()
+                .extract()
+                .response();
+
+        return response;
     }
 }
