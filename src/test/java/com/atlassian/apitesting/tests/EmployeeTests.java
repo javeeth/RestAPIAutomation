@@ -1,15 +1,12 @@
 package com.atlassian.apitesting.tests;
 
 import com.atlassian.api.entities.*;
-import com.atlassian.api.exceptions.InvalidEnvironmentException;
-import com.atlassian.api.property.Environment;
 import com.atlassian.api.property.SystemProperties;
 import com.atlassian.apitesting.Group;
 import com.atlassian.apitesting.apiHelper.AssertionHelper;
 import com.atlassian.apitesting.apiHelper.EmployeeTestHelper;
 import com.atlassian.apitesting.dataProviders.EmployeeProvider;
 import com.google.gson.Gson;
-import org.aeonbits.owner.ConfigFactory;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -45,7 +42,7 @@ public class EmployeeTests {
 
         RestResponse<PostEmployeeRsp> postEmployeeRsp = employeeTestHelper.postEmployee(employee);
         Assert.assertEquals(HttpStatus.SC_OK, postEmployeeRsp.getStatusCode());
-        logger.info("GetEmployee Response  : \n" + gson.toJson(postEmployeeRsp.getApiResponse()));
+        logger.info("Post Employee Response  : \n" + gson.toJson(postEmployeeRsp.getApiResponse()));
 
         assertionHelper.assertEmployeeData(postEmployeeRsp.getApiResponse(), employee);
 

@@ -24,14 +24,14 @@ public class RestAssuredClient extends BaseClient{
     }
 
 
-    public RestResponse<PostEmployeeRsp> postEmployee(String requestBody){
+    public RestResponse<PostEmployeeRsp> postEmployee(Object requestBody){
         RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), "/api/v1/create", requestBody);
         Response response = postRequest(restRequest);
         RestResponse<PostEmployeeRsp> apiResponse = mapResponse(PostEmployeeRsp.class, response);
         return apiResponse;
     }
 
-    public RestResponse<EmployeeInfo> updateEmployee(Integer employeeId, String requestBody){
+    public RestResponse<EmployeeInfo> updateEmployee(Integer employeeId, Object requestBody){
         RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), String.format("/api/v1/update/%s", employeeId), requestBody);
         Response response = putRequest(restRequest);
         RestResponse<EmployeeInfo> apiResponse = mapResponse(EmployeeInfo.class, response);
@@ -56,11 +56,11 @@ public class RestAssuredClient extends BaseClient{
         return getRestRequest(endpoint, requestUri, null, null);
     }
 
-    private RestRequest getRestRequest(String endpoint, String requestUri, String requestBody){
+    private RestRequest getRestRequest(String endpoint, String requestUri, Object requestBody){
         return getRestRequest(endpoint, requestUri, requestBody, null);
     }
 
-    private RestRequest getRestRequest(String endpoint, String requestUri, String requestBody, Map<String, String> header){
+    private RestRequest getRestRequest(String endpoint, String requestUri, Object requestBody, Map<String, String> header){
         RestRequest restRequest = new RestRequest();
         restRequest.setEndpoint(endpoint);
         restRequest.setRequestBody(requestBody);
