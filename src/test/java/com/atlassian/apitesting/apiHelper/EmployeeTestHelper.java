@@ -10,8 +10,8 @@ public class EmployeeTestHelper {
     Gson gson = new Gson();
     RestAssuredClient restAssuredClient;
 
-    public EmployeeTestHelper(Environment environment){
-        this.restAssuredClient = new RestAssuredClient(environment);
+    public EmployeeTestHelper() {
+        this.restAssuredClient = new RestAssuredClient();
     }
     public RestResponse<GetEmployeesRsp> getEmployees(){
         RestResponse<GetEmployeesRsp> apiResponse = restAssuredClient.getEmployeeList();

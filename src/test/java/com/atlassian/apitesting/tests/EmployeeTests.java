@@ -19,8 +19,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 public class EmployeeTests {
-
-    Environment testEnvironment;
+    
     EmployeeTestHelper employeeTestHelper;
     Gson gson;
     AssertionHelper assertionHelper;
@@ -28,16 +27,8 @@ public class EmployeeTests {
 
     @BeforeMethod
     void initializeApiContext(){
-        try{
-            ConfigFactory.setProperty("env", SystemProperties.ENV);
-            testEnvironment = ConfigFactory.create(Environment.class);
-        }
-        catch (Exception e){
-            throw new InvalidEnvironmentException(SystemProperties.ENV);
-        }
-
         logger.info("Test Environment is : " + SystemProperties.ENV);
-        employeeTestHelper = new EmployeeTestHelper(testEnvironment);
+        employeeTestHelper = new EmployeeTestHelper();
         assertionHelper = new AssertionHelper();
         gson = new Gson();
     }
