@@ -24,15 +24,15 @@ public class RestAssuredClient extends BaseClient{
     }
 
 
-    public RestResponse<PostEmployeeRsp> postEmployee(Object requestBody){
-        RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), "/api/v1/create", requestBody);
+    public <T> RestResponse<PostEmployeeRsp> postEmployee(T requestObject){
+        RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), "/api/v1/create", requestObject);
         Response response = postRequest(restRequest);
         RestResponse<PostEmployeeRsp> apiResponse = mapResponse(PostEmployeeRsp.class, response);
         return apiResponse;
     }
 
-    public RestResponse<EmployeeInfo> updateEmployee(Integer employeeId, Object requestBody){
-        RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), String.format("/api/v1/update/%s", employeeId), requestBody);
+    public <T> RestResponse<EmployeeInfo> updateEmployee(Integer employeeId, T requestObject){
+        RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), String.format("/api/v1/update/%s", employeeId), requestObject);
         Response response = putRequest(restRequest);
         RestResponse<EmployeeInfo> apiResponse = mapResponse(EmployeeInfo.class, response);
         return apiResponse;
@@ -56,14 +56,14 @@ public class RestAssuredClient extends BaseClient{
         return getRestRequest(endpoint, requestUri, null, null);
     }
 
-    private RestRequest getRestRequest(String endpoint, String requestUri, Object requestBody){
-        return getRestRequest(endpoint, requestUri, requestBody, null);
+    private <T> RestRequest getRestRequest(String endpoint, String requestUri, T requestObject){
+        return getRestRequest(endpoint, requestUri, requestObject, null);
     }
 
-    private RestRequest getRestRequest(String endpoint, String requestUri, Object requestBody, Map<String, String> header){
+    private <T> RestRequest getRestRequest(String endpoint, String requestUri, T requestObject, Map<String, String> header){
         RestRequest restRequest = new RestRequest();
         restRequest.setEndpoint(endpoint);
-        restRequest.setRequestBody(requestBody);
+        restRequest.setRequestObject(requestObject);
         restRequest.setRequestUri(requestUri);
         restRequest.setHeaderMap(header);
         return restRequest;

@@ -13,9 +13,8 @@ public class BaseClient {
 
         RestAssured.baseURI = restRequest.getEndpoint();
         RestAssured.basePath = restRequest.getRequestUri();
-
         Response response =  given().contentType(ContentType.JSON)
-                .body(restRequest.getRequestBody())
+                .body(restRequest.getRequestObject())
                 .post()
                 .then()
                 .extract()
@@ -44,7 +43,7 @@ public class BaseClient {
         RestAssured.basePath = restRequest.getRequestUri();
 
         Response response =  given().contentType(ContentType.JSON)
-                .body(restRequest.getRequestBody())
+                .body(restRequest.getRequestObject())
                 .put()
                 .then()
                 .extract()

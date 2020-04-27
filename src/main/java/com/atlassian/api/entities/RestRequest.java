@@ -2,19 +2,12 @@ package com.atlassian.api.entities;
 
 import java.util.Map;
 
-public class RestRequest {
-    private Object requestBody;
+public class RestRequest<T> {
+    private T requestObject;
     private Map<String,String> headerMap;
     private String endpoint;
     private String requestUri;
 
-    public Object getRequestBody() {
-        return requestBody;
-    }
-
-    public void setRequestBody(Object requestBody) {
-        this.requestBody = requestBody;
-    }
 
     public Map<String, String> getHeaderMap() {
         return headerMap;
@@ -38,5 +31,13 @@ public class RestRequest {
 
     public void setRequestUri(String requestUri) {
         this.requestUri = requestUri;
+    }
+
+    public T getRequestObject() {
+        return requestObject;
+    }
+
+    public void setRequestObject(T requestObject) {
+        this.requestObject = requestObject;
     }
 }
