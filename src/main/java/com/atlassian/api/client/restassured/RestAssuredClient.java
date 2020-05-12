@@ -4,19 +4,22 @@ import com.atlassian.api.entities.*;
 import com.atlassian.api.exceptions.InvalidEnvironmentException;
 import com.atlassian.api.property.Environment;
 import com.atlassian.api.property.SystemProperties;
-import io.restassured.response.Response;
+import com.google.inject.Inject;
 import org.aeonbits.owner.ConfigFactory;
 
 import java.util.Map;
 
-public class RestAssuredClient extends BaseClient{
+public class RestAssuredClient {
 
+    private IRestClient iRestClient;
     Environment testEnvironment;
 
-    public RestAssuredClient(){
+    @Inject
+    public RestAssuredClient(IRestClient iRestClient){
         try{
             ConfigFactory.setProperty("env", SystemProperties.ENV);
             testEnvironment = ConfigFactory.create(Environment.class);
+            this.iRestClient = iRestClient;
         }
         catch (Exception e){
             throw new InvalidEnvironmentException(SystemProperties.ENV);
@@ -26,30 +29,22 @@ public class RestAssuredClient extends BaseClient{
 
     public <T> RestResponse<PostEmployeeRsp> postEmployee(T requestObject){
         RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), "/api/v1/create", requestObject);
-        Response response = postRequest(restRequest);
-        RestResponse<PostEmployeeRsp> apiResponse = mapResponse(PostEmployeeRsp.class, response);
-        return apiResponse;
+        return iRestClient.postRequest(restRequest, PostEmployeeRsp.class);
     }
 
     public <T> RestResponse<EmployeeInfo> updateEmployee(Integer employeeId, T requestObject){
         RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), String.format("/api/v1/update/%s", employeeId), requestObject);
-        Response response = putRequest(restRequest);
-        RestResponse<EmployeeInfo> apiResponse = mapResponse(EmployeeInfo.class, response);
-        return apiResponse;
+        return iRestClient.putRequest(restRequest, EmployeeInfo.class);
     }
 
     public RestResponse<GetEmployeesRsp> getEmployeeList(){
         RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), "/api/v1/employees");
-        Response response = getResponse(restRequest);
-        RestResponse<GetEmployeesRsp> apiResponse = mapResponse(GetEmployeesRsp.class, response);
-        return apiResponse;
+        return iRestClient.getResponse(restRequest, GetEmployeesRsp.class);
     }
 
     public RestResponse<EmployeeInfo> getEmployee(Integer employeeId){
         RestRequest restRequest = getRestRequest(testEnvironment.endpoint(), String.format("/api/v1/employee/%s", employeeId));
-        Response response = getResponse(restRequest);
-        RestResponse<EmployeeInfo> apiResponse = mapResponse(EmployeeInfo.class, response);
-        return apiResponse;
+        return iRestClient.getResponse(restRequest, EmployeeInfo.class);
     }
 
     private RestRequest getRestRequest(String endpoint, String requestUri){
@@ -67,13 +62,6 @@ public class RestAssuredClient extends BaseClient{
         restRequest.setRequestUri(requestUri);
         restRequest.setHeaderMap(header);
         return restRequest;
-    }
-
-    private <T> RestResponse<T> mapResponse(Class<T> responseClass, Response response) {
-        RestResponse<T> apiResponse = new RestResponse<>();
-        apiResponse.setApiResponse(response.as(responseClass));
-        apiResponse.setStatusCode(response.statusCode());
-        return apiResponse;
     }
 
 }

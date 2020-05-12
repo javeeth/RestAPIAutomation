@@ -2,14 +2,13 @@ package com.atlassian.apitesting.apiHelper;
 
 import com.atlassian.api.client.restassured.RestAssuredClient;
 import com.atlassian.api.entities.*;
+import com.google.inject.Inject;
 
 public class EmployeeTestHelper {
 
+    @Inject
     RestAssuredClient restAssuredClient;
 
-    public EmployeeTestHelper() {
-        this.restAssuredClient = new RestAssuredClient();
-    }
     public RestResponse<GetEmployeesRsp> getEmployees(){
         RestResponse<GetEmployeesRsp> apiResponse = restAssuredClient.getEmployeeList();
         return apiResponse;

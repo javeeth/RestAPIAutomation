@@ -1,33 +1,43 @@
 package com.atlassian.apitesting.tests;
 
 import com.atlassian.api.entities.*;
+import com.atlassian.api.modules.RestClientModule;
 import com.atlassian.api.property.SystemProperties;
 import com.atlassian.apitesting.Group;
 import com.atlassian.apitesting.apiHelper.AssertionHelper;
 import com.atlassian.apitesting.apiHelper.EmployeeTestHelper;
 import com.atlassian.apitesting.dataProviders.EmployeeProvider;
 import com.google.gson.Gson;
+import com.google.inject.Inject;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
 import java.util.logging.Logger;
 
+@Epic("Employee Information")
+@Feature("Process Employee Information")
+@Guice(modules = {RestClientModule.class})
 public class EmployeeTests {
-    
+
+    @Inject
     EmployeeTestHelper employeeTestHelper;
+    @Inject
     Gson gson;
+    @Inject
     AssertionHelper assertionHelper;
-    Logger logger = Logger.getLogger(EmployeeTests.class.getName());
+    @Inject
+    Logger logger;
 
     @BeforeMethod
     void initializeApiContext(){
         logger.info("Test Environment is : " + SystemProperties.ENV);
-        employeeTestHelper = new EmployeeTestHelper();
-        assertionHelper = new AssertionHelper();
-        gson = new Gson();
     }
 
     @Test(groups = {Group.REGRESSION, Group.SMOKE})
@@ -38,6 +48,7 @@ public class EmployeeTests {
     }
 
     @Test(groups = {Group.REGRESSION, Group.SMOKE}, dataProvider = "employee", dataProviderClass = EmployeeProvider.class)
+    @Story("Post Employee Verification")
     public void happyPathPostEmployeeAndVerifyEmployeeDetails(Employee employee){
 
         RestResponse<PostEmployeeRsp> postEmployeeRsp = employeeTestHelper.postEmployee(employee);
@@ -71,4 +82,5 @@ public class EmployeeTests {
 
         Assert.assertEquals(updateEmployee.getApiResponse().getStatus(), "success");
     }
+
 }

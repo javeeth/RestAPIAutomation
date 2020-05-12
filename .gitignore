@@ -3,3 +3,7 @@
 build/
 out/
 .DS_Store
+gradle.properties
+allure-results/
+.allure
+src/main/generated/
