@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 @Epic("Employee Information")
 @Feature("Process Employee Information")
 @Guice(modules = {RestClientModule.class})
-public class EmployeeTests {
+public class EmployeeTests extends TestBase {
 
     @Inject
     EmployeeTestHelper employeeTestHelper;

@@ -1,6 +1,5 @@
 package com.atlassian.api.client.restassured;
 
-import com.atlassian.api.entities.PostEmployeeRsp;
 import com.atlassian.api.entities.RestRequest;
 import com.atlassian.api.entities.RestResponse;
 import io.qameta.allure.restassured.AllureRestAssured;
@@ -8,11 +7,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
-import java.lang.reflect.Type;
-
 import static io.restassured.RestAssured.given;
 
-public class BaseClient implements IRestClient {
+public class RestAssuredClientBase {
 
     public <T> RestResponse<T> postRequest(RestRequest restRequest, Class<T> responseClass){
 
